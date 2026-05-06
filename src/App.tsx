@@ -129,15 +129,35 @@ const App = () => {
 
 		// Load diabdat.mpq via CORS proxy (for static hosting like GitHub Pages)
 		const archiveUrl = "https://archive.org/download/DIABDAT/DIABDAT.MPQ";
-		const mpqUrl = `https://corsproxy.io/?url=${encodeURIComponent(archiveUrl)}`;
+		
+		// Try multiple CORS proxies
+		const proxyUrls = [
+			`https://cors-anywhere.herokuapp.com/${archiveUrl}`,
+			`https://api.allorigins.win/raw?url=${encodeURIComponent(archiveUrl)}`,
+			`https://corsproxy.org/?url=${encodeURIComponent(archiveUrl)}`
+		];
+		
 		setLoading(true);
 		dispatchLifecycle("START");
 		
-		let response: Response;
-		try {
-			response = await fetch(mpqUrl);
-		} catch (err) {
-			handleError("Failed to fetch DIABDAT.MPQ from archive.org. Check your network connection.");
+		let response: Response | null = null;
+		let lastError: Error | null = null;
+		
+		for (const mpqUrl of proxyUrls) {
+			try {
+				const fetchedResponse = await fetch(mpqUrl);
+				if (fetchedResponse.ok) {
+					response = fetchedResponse;
+					break;
+				}
+			} catch (err) {
+				lastError = err as Error;
+				continue;
+			}
+		}
+		
+		if (!response || !response.ok) {
+			handleError("Failed to fetch DIABDAT.MPQ from all CORS proxies. Check your network connection.");
 			setLoading(false);
 			dispatchLifecycle("FAIL");
 			return;
