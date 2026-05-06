@@ -127,8 +127,9 @@ const App = () => {
 		game.current = null;
 		dispatchLifecycle("RESET");
 
-		// Load diabdat.mpq from archive.org
-		const mpqUrl = "https://archive.org/download/DIABDAT/DIABDAT.MPQ";
+		// Load diabdat.mpq via CORS proxy (for static hosting like GitHub Pages)
+		const archiveUrl = "https://archive.org/download/DIABDAT/DIABDAT.MPQ";
+		const mpqUrl = `https://corsproxy.io/?url=${encodeURIComponent(archiveUrl)}`;
 		setLoading(true);
 		dispatchLifecycle("START");
 		
