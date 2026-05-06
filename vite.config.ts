@@ -45,7 +45,7 @@ export default defineConfig({
 				"x-image.png",
 			],
 			manifest: {
-				name: "Diablo Web App",
+				name: "Diablo (Unblocked)",
 				short_name: "DIABLO",
 				description: "Experience the classic Diablo game directly in your browser.",
 				start_url: BASE,
