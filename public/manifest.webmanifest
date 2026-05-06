@@ -1,6 +1,6 @@
 {
 	"short_name": "DIABLO",
-	"name": "Diablo Web App",
+	"name": "Diablo (Unblocked)",
 	"description": "Experience the classic Diablo game directly in your browser.",
 	"icons": [
 		{
@@ -19,8 +19,8 @@
 			"type": "image/png"
 		}
 	],
-	"start_url": "/diablo_web/",
-	"scope": "/diablo_web/",
+	"start_url": "/Diablo-Unblocked/",
+	"scope": "/Diablo-Unblocked/",
 	"display": "standalone",
 	"background_color": "#000000",
 	"theme_color": "#ffffff",
