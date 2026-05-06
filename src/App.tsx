@@ -141,7 +141,6 @@ const App = () => {
 		dispatchLifecycle("START");
 		
 		let response: Response | null = null;
-		let lastError: Error | null = null;
 		
 		for (const mpqUrl of proxyUrls) {
 			try {
@@ -151,7 +150,6 @@ const App = () => {
 					break;
 				}
 			} catch (err) {
-				lastError = err as Error;
 				continue;
 			}
 		}
