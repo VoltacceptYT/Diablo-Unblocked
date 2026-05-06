@@ -7,7 +7,7 @@ import wasm from "vite-plugin-wasm";
 import { VitePWA } from "vite-plugin-pwa";
 import pkg from "./package.json";
 
-const BASE = "/diablo_web/";
+const BASE = "/Diablo-Unblocked/";
 const ROOT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const reactCompilerOptions = {
 	presets: [reactCompilerPreset()],
