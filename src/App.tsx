@@ -127,13 +127,48 @@ const App = () => {
 		game.current = null;
 		dispatchLifecycle("RESET");
 
-		// Fetch diabdat.mpq from public folder
-		const response = await fetch("/diabdat.mpq");
-		if (!response.ok) {
-			handleError("Failed to load diabdat.mpq. Make sure the file exists in the public folder.");
+		// Load diabdat.mpq from archive.org
+		const mpqUrl = "https://archive.org/download/DIABDAT/DIABDAT.MPQ";
+		setLoading(true);
+		dispatchLifecycle("START");
+		
+		let response: Response;
+		try {
+			response = await fetch(mpqUrl);
+		} catch (err) {
+			handleError("Failed to fetch DIABDAT.MPQ from archive.org. Check your network connection.");
+			setLoading(false);
+			dispatchLifecycle("FAIL");
 			return;
 		}
-		const blob = await response.blob();
+		
+		if (!response.ok) {
+			handleError(`Failed to load DIABDAT.MPQ from archive.org (HTTP ${response.status}).`);
+			setLoading(false);
+			dispatchLifecycle("FAIL");
+			return;
+		}
+		
+		const contentLength = response.headers.get("Content-Length");
+		const total = contentLength ? parseInt(contentLength, 10) : 0;
+		
+		let loaded = 0;
+		const reader = response.body?.getReader();
+		const chunks: Uint8Array[] = [];
+		
+		if (reader) {
+			while (true) {
+				const { done, value } = await reader.read();
+				if (done) break;
+				chunks.push(value);
+				loaded += value.length;
+				if (total > 0) {
+					setProgress({ text: "Downloading DIABDAT.MPQ...", loaded, total });
+				}
+			}
+		}
+		
+		const blob = new Blob(chunks, { type: "application/octet-stream" });
 		const file = new File([blob], "diabdat.mpq", { type: "application/octet-stream" });
 
 		const startResult = runtime.startWithFile({
@@ -161,16 +196,14 @@ const App = () => {
 				}),
 			onBeforeStart: ({ isRetail }) => {
 				setRetail(isRetail);
-				setLoading(true);
-				dispatchLifecycle("START");
 			},
 		});
 
 		if (startResult.status !== "starting") return;
 
 		startResult.promise.then(
-			(loaded) => {
-				game.current = loaded;
+			(loadedGame) => {
+				game.current = loadedGame;
 
 				setLoading(false);
 				dispatchLifecycle("LOADED");
